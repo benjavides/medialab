@@ -8,18 +8,25 @@ var ptjeizq = 0;
 var ptjeder = 0;
 var bot = true; //se juega contra el pc
 var rebotes = 0;
-var texto = rebotes;
-var display;
+var texto = rebotes; // lo que dice el texto
+var display; // el contenedor de texto
+var record=0; //high score
 
 function setup() {
   createCanvas(ancho, alto);
   ball = new Ball();
-  right = new Bracket(ancho-10, alto/2, bot);
+  right = new Bracket(ancho-20, alto/2, bot);
   left = new Bracket(10, alto/2);
+  background("white");
+  
 }
 
 function draw() {
-   background(153);
+   //Dibujar borde;
+   stroke("black");
+   noFill();
+   rect(0,0,ancho-1,alto-1);
+   
    ball.move();
    ball.display();
    right.move();
@@ -30,7 +37,15 @@ function draw() {
    left.display();
    
    // texto con rebotes
-   fill(51);
+   fill("whilte");
+   noStroke();
+   rect(ancho/2-2,4,60,30)
+   if (rebotes>=record){
+     fill("red")
+   }
+   else{
+     fill(51);
+   }
    textSize(32);
    display = text(texto, ancho/2, 30);
 }
@@ -39,7 +54,7 @@ function draw() {
 class Ball {
    constructor () {
       this.x = ancho/2;
-      this.y = random(height);
+      this.y = random(40,height);
       this.diameter = 20;
       this.speed = 3;
       this.speedx = -1;
@@ -53,12 +68,13 @@ class Ball {
   }
 
   display () {
+    fill(color(this.x*255/ancho, this.y*255/alto,mouseX*255/ancho));
     ellipse(this.x, this.y, this.diameter, this.diameter);
   }
   
   collition (){
      // colision bordes inferior y superior
-      if (this.y <= 0 | this.y >= alto){
+      if (this.y <= 50 | this.y >= alto){
          this.speedy *= -1;
       }
       // punto lado izquierdo
@@ -78,7 +94,9 @@ class Ball {
 
 // Bracket class
 class Bracket {
-   constructor (x,y, bot=false){
+   constructor (x,y, bot){
+      this.bot = bot || false;
+      this.prey=y
       this.x=x;
       this.y=y;
       this.sizex = 10;
@@ -87,27 +105,36 @@ class Bracket {
       this.movingu = false;
       this.movingd = false;
       this.boost = false;
-      this.bot = bot;
     }
    
    display (){
+    this.undisplay();
+    stroke("black");
     fill(255, 204, 0);
     rect(this.x, this.y, this.sizex, this.sizey);
    }
    
+   undisplay(){
+    stroke("white");
+    fill("white");
+    rect(this.x, this.prey-2, this.sizex, this.sizey+4);
+   }
+   
    move () {
-      
-      if (this.movingu == true && this.y >= 0){
+      if (this.movingu == true && this.y >= 40){
+         this.prey = this.y;
          this.y -= this.speed;
       }
-      if (this.movingd == true && this.y <= alto-this.sizey){
+      if (this.movingd == true && this.y <= alto-this.sizey-1){
+         this.prey = this.y;
          this.y += this.speed;
       }
       else if (this.bot){
+         this.prey = this.y;
          this.y = ball.y;
       }
   }
-  
+  //Colisión bracket con pelota
   collide() {
      if(collideRectCircle(this.x, this.y, this.sizex, this.sizey, ball.x, ball.y, ball.diameter )){
         ball.speedx *= -1;
@@ -118,6 +145,28 @@ class Bracket {
   }
 }
 
+// Ajuste dificultad
+function difficulty() {
+   ball.speed += 0.1;
+}
+
+// Reset
+function reset() {
+   stroke("black");
+   fill("white");
+   rect(0,0,ancho-1,alto-1);
+   setHighScore();
+   ball= new Ball();
+   rebotes = 0;
+   texto = rebotes;
+}
+
+// Set Highscore
+function setHighScore(){
+  if (rebotes > record){
+    record = rebotes;
+  }
+}
 
 // Movimiento
 function keyPressed() {
@@ -139,35 +188,19 @@ function keyPressed() {
 }
 
 function keyReleased() {
-   // UP key
   if(keyCode == UP_ARROW) {
     left.movingu = false;
   }
- 
-  // DOWN key
+  
   if(keyCode == DOWN_ARROW) { 
     left.movingd = false;
   }
   
-  // CONTROL key
   if(keyCode == CONTROL) { 
      left.speed = 5;
   }
   return false;
 }
-
-// Ajuste dificultad
-function difficulty() {
-   ball.speed += 0.1;
-}
-
-// Reset
-function reset() {
-   ball= new Ball();
-   rebotes = 0;
-   texto = rebotes;
-}
-   
    
    
 
