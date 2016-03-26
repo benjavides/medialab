@@ -15,8 +15,8 @@ var record=0; //high score
 function setup() {
   createCanvas(ancho, alto);
   ball = new Ball();
-  right = new Bracket(ancho-20, alto/2, bot);
-  left = new Bracket(10, alto/2);
+  right = new Pallet(ancho-20, alto/2, bot);
+  left = new Pallet(10, alto/2);
   background("white");
   
 }
@@ -68,7 +68,7 @@ class Ball {
   }
 
   display () {
-    fill(color(this.x*255/ancho, this.y*255/alto,mouseX*255/ancho));
+    fill(color(this.x*255/ancho+mouseX*0.1, this.y*255/alto+mouseY*0.1,mouseX*255/ancho));
     ellipse(this.x, this.y, this.diameter, this.diameter);
   }
   
@@ -92,8 +92,8 @@ class Ball {
   }
 }
 
-// Bracket class
-class Bracket {
+// Pallet class
+class Pallet {
    constructor (x,y, bot){
       this.bot = bot || false;
       this.prey=y
@@ -158,6 +158,8 @@ function reset() {
    setHighScore();
    ball= new Ball();
    rebotes = 0;
+   ptjeizq = 0;
+   ptjeder = 0;
    texto = rebotes;
 }
 
@@ -201,6 +203,4 @@ function keyReleased() {
   }
   return false;
 }
-   
-   
 
