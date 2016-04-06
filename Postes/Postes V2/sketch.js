@@ -11,6 +11,7 @@ function setup() {
    createCanvas(400, 400);
    postes = [];
    poste = new Poste();
+   poste.createNext(true);
 }
 
 function draw() {
@@ -20,9 +21,10 @@ function draw() {
       post.move();
       post.display();
       post.checkOutScreen();
+      //post.checkInScreen();
    });
-   //crea nuevo poste si hay menos de 3 creados
-   if (postes.length<=3){
+   //si hay 3 postes postes o menos crea uno con cierta probabilidad 
+   if (postes.length<=4){
       probability(1/(frameRate()*1), poste.createNext.bind(poste)); //crea poste con probabilidad (lento, poco eficiente)
    }
 }
@@ -38,20 +40,23 @@ class Poste {
          print("Poste creado");
       }
    //crea poste siguiente
-   createNext() {
+   createNext(first) {
       if (this.prev==null){
          print("esto solo se debería imprimir una vez");
          poste = new Poste(this);
          this.nextt = poste;
          this.createCable(this,this.nextt);
+         //si hay 2 o menos postes crea uno
+         if (postes.length<=2){
+            this.createNext();
+         }
       }
       //crea poste solo si la separación es mayor al 50% de la pantalla
-      else if (this.pos<=width/2){
+      else if (this.pos<=width/2 | first == true){
          poste = new Poste(this);
          this.nextt = poste;
          this.createCable();
       }
-      
       else {
          print("Lo intentaremos nuevamente");
       }
@@ -62,14 +67,20 @@ class Poste {
          new_cable = new Cable(this,this.nextt);
          this.cables.push(new_cable);
       }
-   //revisa si el poste está en pantalla
+   //revisa si el poste está en pantalla y se destruye de ser asi
    checkOutScreen(){
       if (this.pos<this.size.x){
-         if (postes.length>=4){
+         if (postes.length>=5){
             postes.splice(postes.indexOf(this), 1);
             print("Poste eliminado. Quedan:");
             print(postes.length);
          }
+      }
+   }
+   //revisa si está en pentalla, de ser asi y no tener poste a continuación lo crea
+   checkInScreen(){
+      if ((0<=this.pos<=width) && this.nextt==null){
+         this.createNext();
       }
    }
    //mueve el poste a la izquierda
@@ -82,6 +93,13 @@ class Poste {
    display() {
       fill("black");
       rect(this.pos, height - this.size.y, this.size.x, this.size.y);
+      this.displayCables();
+   }
+   //muestra cada uno de los cables que parten del poste
+   displayCables(){
+      for (let c=0;c<this.cables.length ;c++){
+         this.cables[c].display();
+      }
    }
 }
 
@@ -95,14 +113,18 @@ class Cable {
    //calcula el cable
    calcCurve(){
       let x=0;
-      for (let i=0;i<this.yvalues.length ;i++){
-         this.yvalues[i]=sin(x);
-         x+=1;
+      for (let j=0;j<this.yvalues.length ;j++){
+         this.yvalues[j]=sin(x)*5+200;
+         x+=0.2;
       }
    }
    //muestra el cable
    display(){
-      
+      fill("black");
+      stroke("black");
+      for (let i=0;i<abs(this.poste_finish.pos-this.poste_start.pos);i++){
+         point(this.poste_start.pos+i,this.yvalues[i]);
+      }
    }
 }
 
