@@ -1,3 +1,6 @@
+//SIMULACIÓN POSTES DE LUZ
+//BENJAMÍN BENAVIDES
+//MEDIALAB 2016-1
 "use strict"
 var moving = false;
 var speed = 5;
@@ -12,11 +15,13 @@ function setup() {
 
 function draw() {
    background("white");
+   //acción cada cuadro para cada poste
    postes.forEach(function(post) {
       post.move();
       post.display();
       post.checkOutScreen();
    });
+   //crea nuevo poste si hay menos de 3 creados
    if (postes.length<=3){
       probability(1/(frameRate()*1), poste.createNext.bind(poste)); //crea poste con probabilidad (lento, poco eficiente)
    }
@@ -28,8 +33,8 @@ class Poste {
          this.cables = []; //lista de cables entre este poste y siguiente
          this.pos = width; //posición x
          this.size = createVector(20, 250);
-         this.nextt = null;
-         postes.push(this);
+         this.nextt = null; //siguiente poste
+         postes.push(this); //agrega a lista de postes
          print("Poste creado");
       }
    //crea poste siguiente
@@ -38,11 +43,13 @@ class Poste {
          print("esto solo se debería imprimir una vez");
          poste = new Poste(this);
          this.nextt = poste;
+         this.createCable(this,this.nextt);
       }
-      
+      //crea poste solo si la separación es mayor al 50% de la pantalla
       else if (this.pos<=width/2){
          poste = new Poste(this);
          this.nextt = poste;
+         this.createCable();
       }
       
       else {
@@ -52,7 +59,7 @@ class Poste {
    //crea cables entre este poste y el siguiente
    createCable() {
          let new_cable;
-         new_cable = new Cable();
+         new_cable = new Cable(this,this.nextt);
          this.cables.push(new_cable);
       }
    //revisa si el poste está en pantalla
@@ -79,8 +86,23 @@ class Poste {
 }
 
 class Cable {
-   constructor() {
-
+   constructor(poste_start,poste_finish) {
+      this.poste_start=poste_start;
+      this.poste_finish=poste_finish;
+      this.yvalues=new Array(abs(this.poste_finish.pos-this.poste_start.pos));
+      this.calcCurve();
+   }
+   //calcula el cable
+   calcCurve(){
+      let x=0;
+      for (let i=0;i<this.yvalues.length ;i++){
+         this.yvalues[i]=sin(x);
+         x+=1;
+      }
+   }
+   //muestra el cable
+   display(){
+      
    }
 }
 
@@ -98,13 +120,13 @@ function keyReleased() {
    }
 }
 
-//dice si se debe ejecutar funcion con probabilidad p
+//dice si se debe ejecutar la funcion funct con probabilidad p
 function probability(prob, funct) {
    let n;
    n = random(0, 1);
    if (n <= prob) {
-      print("yep");
       funct();
-   } else {
+   } 
+   else {
    }
 }
