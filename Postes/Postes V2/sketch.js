@@ -47,7 +47,7 @@ class Poste {
          this.size = createVector(width/20, random(height/1.75, height/1.75+20));
          this.nextt = null; //siguiente poste
          postes.push(this); //agrega a lista de postes
-         print("Poste creado");
+         //print("Poste creado");
       }
    //crea poste siguiente
    createNext() {
@@ -56,7 +56,7 @@ class Poste {
       this.createCables();
       return poste;
    }
-   //Crea entre 1 y 3 cables
+   //Crea entre 1 y 3 cables con distintas probabilidades
    createCables(){
       let num=1;
       if(probability(0.7)){
@@ -69,7 +69,7 @@ class Poste {
          this.createCable(num-1);
       }
    }
-   //crea cables entre este poste y el siguiente
+   //crea un cable entre este poste y el siguiente
    createCable(c) {
          let new_cable;
          new_cable = new Cable(this,this.nextt,c);
@@ -78,8 +78,8 @@ class Poste {
    //se destruye el poste
    destroy(){
       postes.splice(postes.indexOf(this), 1);
-      print("Poste eliminado. Quedan:");
-      print(postes.length);
+      //print("Poste eliminado. Quedan:");
+      //print(postes.length);
    }
    //revisa si está en pantalla
    checkInScreen(){
@@ -114,10 +114,10 @@ class Cable {
    constructor(poste_start,poste_finish,c) {
       this.poste_start=poste_start;
       this.poste_finish=poste_finish;
-      this.yvalues=new Array(abs(int(this.poste_finish.pos-this.poste_start.pos)));
-      this.desv = random(height/2,c*5+height/2);
-      this.desv = height/2;
-      this.amplitude = random(20,30+15*c);
+      this.yvalues=new Array(abs(int(this.poste_finish.pos-this.poste_start.pos))); //valores y de cada punto
+      this.desv = random(height/2,c*5+height/2); //cambia el valor vertical del cable
+      //this.desv = height/2; descomentar si se ve raro con el parametro anterior
+      this.amplitude = random(20,30+15*c); //cambia la amplitud de la onda
       this.calcCurve();
    }
    //calcula el cable
@@ -125,7 +125,7 @@ class Cable {
       let x=0;
       for (let j=0;j<this.yvalues.length ;j++){
          this.yvalues[j]=sin(x)*this.amplitude+this.desv;
-         x+=random(0.01);
+         x+=random(0.01); //Cambia el ruido de la onda
       }
    }
    //muestra el cable
@@ -137,13 +137,13 @@ class Cable {
       }
    }
 }
-
+//cuando se presiona la flecha derecha
 function keyPressed() {
    if (keyCode == RIGHT_ARROW) {
       moving = true;
    }
 }
-
+//cuando se deja de presionar la flecha derecha
 function keyReleased() {
    if (keyCode == RIGHT_ARROW) {
       moving = false;
@@ -171,5 +171,3 @@ function checkDestroy(){
          }
    }
 }
-
-
