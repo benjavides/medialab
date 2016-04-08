@@ -44,7 +44,7 @@ class Poste {
          else{
             this.pos = random(this.prev.pos+width,this.prev.pos+2*width); //posición x
          }
-         this.size = createVector(width/20, height/1.75);
+         this.size = createVector(width/20, random(height/1.75, height/1.75+20));
          this.nextt = null; //siguiente poste
          postes.push(this); //agrega a lista de postes
          print("Poste creado");
@@ -119,7 +119,6 @@ class Cable {
       this.desv = height/2;
       this.amplitude = random(20,30+15*c);
       this.calcCurve();
-      this.birds=[];
    }
    //calcula el cable
    calcCurve(c){
@@ -136,40 +135,8 @@ class Cable {
       for (let i=0;i<abs(this.poste_finish.pos-this.poste_start.pos);i++){
          point(this.poste_start.pos+i,this.yvalues[i]);
       }
-      //this.displayBirds();
-   }
-   //crea un pájaro en la posicion (posx,posy)
-   createBird(posx,posy){
-      let bird;
-      bird = new Bird(this);
-      this.birds.push(bird);
-   }
-   //muestra todos los pajaros del cable
-   displayBirds(){
-      for (let b=0;b<this.birds.length ;b++){
-         this.birds[b].display();
-      }
    }
 }
-
-class Bird {
-   constructor(cable,posx,posy){
-      this.cable = cable;
-      this.pos = createVector(posx,posy);
-      this.size = createVector(20,20);
-   }
-   //mueve el pajaro
-   move(){
-      this.pos.x+=1;
-   }
-   //muestra el pajaro
-   display(){
-      fill("grey");
-      stroke("grey");
-      ellipse(this.pos.x,this.pos.y,this.size.x,this.size.y);
-   }
-}
-
 
 function keyPressed() {
    if (keyCode == RIGHT_ARROW) {
