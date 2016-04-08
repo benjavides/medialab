@@ -3,7 +3,7 @@
 //MEDIALAB 2016-1
 "use strict"
 var moving = false;
-var speed = 10;
+var speed = 18;
 var postes;
 var poste;
 var poste1;
@@ -27,7 +27,8 @@ function draw() {
    if (postes.length<=4){
       poste.createNext();
    }
-   if (frame%60==0){
+   //Revisa si debe eliminar el poste más antiguo cada 30 cuadros
+   if (frame%30==0){
       checkDestroy();
    }
    frame+=1;
@@ -43,7 +44,7 @@ class Poste {
          else{
             this.pos = random(this.prev.pos+width,this.prev.pos+2*width); //posición x
          }
-         this.size = createVector(20, 250);
+         this.size = createVector(width/20, height/1.75);
          this.nextt = null; //siguiente poste
          postes.push(this); //agrega a lista de postes
          print("Poste creado");
@@ -52,21 +53,28 @@ class Poste {
    createNext() {
       poste = new Poste(this);
       this.nextt = poste;
-      this.createCable();
+      this.createCables();
       return poste;
    }
-   //crea cables entre este poste y el siguiente
-   createCable() {
-         let new_cable;
-         new_cable = new Cable(this,this.nextt);
-         this.cables.push(new_cable);
+   //Crea entre 1 y 3 cables
+   createCables(){
+      let num=1;
+      if(probability(0.7)){
+         num = 2;
       }
-   //revisa si el poste está en pantalla
-   checkOutScreen(){ 
-      if (this.pos<this.size.x){
-         return true;
+      else if(probability(0.2)){
+         num = 3;
+      }
+      for (let v=1; v<=num;v++){
+         this.createCable(num-1);
       }
    }
+   //crea cables entre este poste y el siguiente
+   createCable(c) {
+         let new_cable;
+         new_cable = new Cable(this,this.nextt,c);
+         this.cables.push(new_cable);
+      }
    //se destruye el poste
    destroy(){
       postes.splice(postes.indexOf(this), 1);
@@ -103,18 +111,22 @@ class Poste {
 }
 
 class Cable {
-   constructor(poste_start,poste_finish) {
+   constructor(poste_start,poste_finish,c) {
       this.poste_start=poste_start;
       this.poste_finish=poste_finish;
       this.yvalues=new Array(abs(int(this.poste_finish.pos-this.poste_start.pos)));
+      this.desv = random(height/2,c*5+height/2);
+      this.desv = height/2;
+      this.amplitude = random(20,30+15*c);
       this.calcCurve();
+      this.birds=[];
    }
    //calcula el cable
-   calcCurve(){
+   calcCurve(c){
       let x=0;
       for (let j=0;j<this.yvalues.length ;j++){
-         this.yvalues[j]=sin(x)*5+200;
-         x+=0.2;
+         this.yvalues[j]=sin(x)*this.amplitude+this.desv;
+         x+=random(0.01);
       }
    }
    //muestra el cable
@@ -124,6 +136,37 @@ class Cable {
       for (let i=0;i<abs(this.poste_finish.pos-this.poste_start.pos);i++){
          point(this.poste_start.pos+i,this.yvalues[i]);
       }
+      //this.displayBirds();
+   }
+   //crea un pájaro en la posicion (posx,posy)
+   createBird(posx,posy){
+      let bird;
+      bird = new Bird(this);
+      this.birds.push(bird);
+   }
+   //muestra todos los pajaros del cable
+   displayBirds(){
+      for (let b=0;b<this.birds.length ;b++){
+         this.birds[b].display();
+      }
+   }
+}
+
+class Bird {
+   constructor(cable,posx,posy){
+      this.cable = cable;
+      this.pos = createVector(posx,posy);
+      this.size = createVector(20,20);
+   }
+   //mueve el pajaro
+   move(){
+      this.pos.x+=1;
+   }
+   //muestra el pajaro
+   display(){
+      fill("grey");
+      stroke("grey");
+      ellipse(this.pos.x,this.pos.y,this.size.x,this.size.y);
    }
 }
 
@@ -135,20 +178,20 @@ function keyPressed() {
 }
 
 function keyReleased() {
-   // UP key
    if (keyCode == RIGHT_ARROW) {
       moving = false;
    }
 }
 
-//dice si se debe ejecutar la funcion funct con probabilidad p
+//retorna true con cierta probabilidad
 function probability(prob, funct) {
    let n;
    n = random(0, 1);
    if (n <= prob) {
-      funct();
+      return true;
    } 
    else {
+      return false;
    }
 }
 //chequea si hay que destruir el poste más antiguo
@@ -161,3 +204,5 @@ function checkDestroy(){
          }
    }
 }
+
+
