@@ -47,6 +47,8 @@ class Poste {
          this.size = createVector(width/20, random(height/1.75, height/1.75+20));
          this.nextt = null; //siguiente poste
          postes.push(this); //agrega a lista de postes
+         this.color = "black";
+         //this.color = color(random(255),random(255),random(255)); //color aleatorio
          //print("Poste creado");
       }
    //crea poste siguiente
@@ -98,7 +100,8 @@ class Poste {
       }
    //muestra el poste
    display() {
-      fill("black");
+      noStroke();
+      fill(this.color);
       rect(this.pos, height - this.size.y, this.size.x, this.size.y);
       this.displayCables();
    }
@@ -119,6 +122,8 @@ class Cable {
       //this.desv = height/2; descomentar si se ve raro con el parametro anterior
       this.amplitude = random(20,30+15*c); //cambia la amplitud de la onda
       this.calcCurve();
+      this.color = "black";
+      //this.color = color(random(255),random(255),random(255)); //color aleatorio
    }
    //calcula el cable
    calcCurve(c){
@@ -130,8 +135,7 @@ class Cable {
    }
    //muestra el cable
    display(){
-      fill("black");
-      stroke("black");
+      stroke(this.color);
       for (let i=0;i<abs(this.poste_finish.pos-this.poste_start.pos);i++){
          point(this.poste_start.pos+i,this.yvalues[i]);
       }
