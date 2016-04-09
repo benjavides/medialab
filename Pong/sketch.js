@@ -11,6 +11,7 @@ var rebotes = 0;
 var texto = rebotes; // lo que dice el texto
 var display; // el contenedor de texto
 var record=0; //high score
+var mouse = true //jugar con el mouse en vez del teclado
 
 function setup() {
   createCanvas(ancho, alto);
@@ -121,15 +122,23 @@ class Pallet {
    }
    
    move () {
-      if (this.movingu == true && this.y >= 40){
+      if (mouse == true){
+        this.prey = this.y;
+        this.y = mouseY;
+        this.undisplay();
+      }
+      else{
+        if (this.movingu == true && this.y >= 40){
          this.prey = this.y;
          this.y -= this.speed;
+        }
+        if (this.movingd == true && this.y <= alto-this.sizey-1){
+           this.prey = this.y;
+           this.y += this.speed;
+        }
       }
-      if (this.movingd == true && this.y <= alto-this.sizey-1){
-         this.prey = this.y;
-         this.y += this.speed;
-      }
-      else if (this.bot){
+      
+      if (this.bot){
          this.prey = this.y;
          this.y = ball.y;
       }
