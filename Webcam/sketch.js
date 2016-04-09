@@ -1,19 +1,22 @@
+"use strict"
 var capture;
 var colorr = 7;
 var stepSize = 20;
 var imagen = false;
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(640, 530);
   capture = createCapture(VIDEO);
   capture.size(640, 480);
   capture.hide();
   noStroke();
   fill(0);
+  
 }
 
 function draw() {
   background(255);
+  drawControls();
   if (imagen ==true){
      image(capture, 0, 0, 640, 480); //muestro imagen original
   }
@@ -47,8 +50,14 @@ function keyPressed() {
    if (keyCode == ENTER) {
       colorr += 1;
    }
-   if (keyCode == BACKSPACE) {
+   if (keyCode == CONTROL) {
       imagen = !imagen;
    }
    stepSize = constrain(tamaño,10,20);
    }
+function drawControls(){
+  let controls="RIGHT->Increase numbers      LEFT ->Decrease numbers      ENTER ->Change color      CTRL ->Original";
+  textSize(12);
+  fill("Black");
+  text(controls,20,500);
+}
