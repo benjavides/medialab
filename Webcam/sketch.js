@@ -56,8 +56,10 @@ function keyPressed() {
    stepSize = constrain(tamaño,10,20);
    }
 function drawControls(){
-  let controls="RIGHT->Increase numbers      LEFT ->Decrease numbers      ENTER ->Change color      CTRL ->Original";
-  textSize(12);
+  let controls="RIGHT->Increase numbers      LEFT ->Decrease numbers";
+  let controls2 = "ENTER ->Change color           CTRL ->Original";
+  textSize(11);
   fill("Black");
   text(controls,20,500);
+  text(controls2,20,515);
 }
